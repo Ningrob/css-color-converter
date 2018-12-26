@@ -1,14 +1,51 @@
-function handleHexToRgb(event) {
+handleHexToRgb = event => {
   event.preventDefault();
-  console.log(event.target.hexInput.value);
-  let rgbCode = event.target.hexInput.value
+  const inputValue = event.target.hexInput.value;
+  const validInputValue = getValidInputValue(inputValue);
+
+  if (!inputValue || validInputValue.length != 6) {
+    alert("error");
+    return;
+  }
+
+  const rgbCode = validInputValue
     .match(/.{1,2}/gi)
-    .reduce((acc, item, index, allItem) => {
-      if (index === allItem.length - 1) {
-        return (acc += `${parseInt(item, 16)})`);
-      } else {
-        return (acc += `${parseInt(item, 16)}, `);
-      }
-    }, "rgb(");
-  document.querySelector(".toRgb").innerHTML = rgbCode;
-}
+    .reduce((acc, item) => acc.concat(parseInt(item, 16)), []);
+  const rgbString = `rgb(${rgbCode.join(",")})`;
+
+  setUpRgbFields(rgbCode);
+  displayRgbResult(rgbString);
+};
+
+getValidInputValue = value => {
+  let colorString = value.trim();
+  if (value.indexOf("#") != -1) {
+    colorString = value.trim().split("#")[1];
+  }
+
+  if (colorString.length === 3) {
+    colorString = colorString
+      .split("")
+      .reduce((acc, item) => acc.concat(item + item), [])
+      .join("");
+  }
+
+  return colorString;
+};
+
+displayRgbResult = color => {
+  document.querySelector(".toRgb").innerHTML = color;
+};
+
+setUpRgbFields = rgbCode => {
+  Object.keys(COLOR_FIELDS).forEach(
+    (color, index) =>
+      (document.querySelector(`.${COLOR_FIELDS[color]}`).value = rgbCode[index])
+  );
+};
+
+const COLOR_FIELDS = {
+  RED: "red",
+  GREEN: "green",
+  BLUE: "blue"
+};
