@@ -3,7 +3,11 @@ handleHexToRgb = event => {
   const inputValue = event.target.hexInput.value;
   const validInputValue = getValidInputValue(inputValue);
 
-  if (!inputValue || validInputValue.length != 6) {
+  const isInvalidColor = validInputValue
+    .match(/.{1,2}/g)
+    .some(item => isNaN(parseInt(item, 16)));
+
+  if (!inputValue || validInputValue.length != 6 || isInvalidColor) {
     alert("error");
     return;
   }
